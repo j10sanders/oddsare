@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>
+    Let's play a game of Rock, Paper, Scissors!
+</h1>
+
+<form role="form" method="POST">
+    <div class="form-group">
+        <label for="title">Rock, Paper, or Scissors?</label>
+        <input type="text" class="form-control" id="title" name="title" placeholder="rock, paper, or scissors" required>
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
+{% endblock %}
