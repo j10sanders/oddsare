@@ -1,7 +1,7 @@
 import os
 from flask.ext.script import Manager
 from rps import app
-from rps.database import Player1, Player2
+from rps.database import Player1, Player2, session
 from rps.database import Base
 
 manager = Manager(app)
