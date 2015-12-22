@@ -28,19 +28,20 @@ def compare(moves):
 def player1_choice_get():
     return render_template("player1.html")
 
-@app.route("/player1", methods=["PUT"])
+@app.route("/player1", methods=["POST"])
 def player1_choice():
-    possibilities = ["rock","paper","scissors"]  
+      
     #print("Let's play a game of Rock, Paper, Scissors!")
-    player1 = input("What is player 1's move? ")
-    while player1 not in possibilities:
-        flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
+    #player1 = input("What is player 1's move? ")
     move = Player1(
+        possibilities = ["rock","paper","scissors"]
         title=request.form["title"]
+        while title not in possibilities:
+        flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
     )
     session.add(move)
     session.commit()
-    return redirect(url_for("player2"))
+    return redirect(url_for("player2_choice_get"))
 
 @app.route("/player2", methods=["GET"])
 def player2_choice_get():
