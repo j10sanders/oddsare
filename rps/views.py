@@ -4,7 +4,6 @@ from rps import app
 from .database import Player1, Player2, session
 import os
 
-app = Flask(__name__)
 
 @app.route("/compare")
 def compare(moves):
@@ -29,7 +28,7 @@ def compare(moves):
 def player1_choice_get():
     return render_template("player1.html")
 
-@app.route("/player1", methods=["POST"])
+@app.route("/player1", methods=["PUT"])
 def player1_choice():
     possibilities = ["rock","paper","scissors"]  
     #print("Let's play a game of Rock, Paper, Scissors!")
