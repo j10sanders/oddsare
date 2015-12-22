@@ -23,7 +23,7 @@ def compare(moves):
         return 0
     
 
-@app.route("/")
+#@app.route("/")
 @app.route("/player1", methods=["GET"])
 def player1_choice_get():
     return render_template("player1.html")
@@ -33,12 +33,12 @@ def player1_choice():
       
     #print("Let's play a game of Rock, Paper, Scissors!")
     #player1 = input("What is player 1's move? ")
+    possibilities = ["rock","paper","scissors"]
     move = Player1(
-        possibilities = ["rock","paper","scissors"]
         title=request.form["title"]
-        while title not in possibilities:
-        flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
     )
+    while move not in possibilities:
+        flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
     session.add(move)
     session.commit()
     return redirect(url_for("player2_choice_get"))
