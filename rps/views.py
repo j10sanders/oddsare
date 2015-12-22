@@ -35,14 +35,15 @@ def player1_choice():
     #player1 = input("What is player 1's move? ")
     possibilities = ["rock","paper","scissors"]
     move = Player1(
-        title=request.form["title"]
+        move=request.form["move"]
     )
     if move not in possibilities:
         flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
         return redirect(url_for("player1_choice_get"))
-    session.add(move)
-    session.commit()
-    return redirect(url_for("player2_choice_get"))
+    else: 
+        session.add(move)
+        session.commit()
+        return redirect(url_for("player2_choice_get"))
 
 @app.route("/player2", methods=["GET"])
 def player2_choice_get():
