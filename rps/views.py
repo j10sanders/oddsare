@@ -46,10 +46,11 @@ def player1_choice():
         flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
         return redirect(url_for("player1_choice_get"))
     else: 
-        move = Player(
+        player_move = Game(
+            player="Player1",
             move=request.form["move"]
             )
-        session.add(move)
+        session.add(player_move)
         session.commit()
         return redirect(url_for("player2_choice_get"))
 
@@ -65,10 +66,11 @@ def player2_choice():
         flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
         return redirect(url_for("player2_choice_get"))
     else: 
-        move = Player2(
+        player_move = Player(
+            name="Player2",
             move=request.form["move"]
             )
-        session.add(move)
+        session.add(player_move)
         session.commit()
         return redirect(url_for("compare"))
  

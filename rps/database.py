@@ -19,11 +19,12 @@ class Player(Base):
     __tablename__ = "players"
 
     id = Column(Integer, primary_key=True)
-    move = relationship("Game", backref="player")
+    name = Column(String(128))
+    this_game = relationship("Game", backref="player")
 
 
 class Game(Base):
-    __tablename__ = "entries"
+    __tablename__ = "games"
 
     id = Column(Integer, primary_key=True)
     move = Column(String(128))
