@@ -1,7 +1,7 @@
 from flask import Flask, flash, render_template, request, redirect, url_for
 from rps import app
 
-from .database import Player, Game, session
+from .database import Game, session
 import os
 
 
@@ -31,41 +31,42 @@ def compare(moves):
         print("Player 2 wins!")
     else:
         print("You tied!")'''
-    
+
 
 #@app.route("/")
-@app.route("/player1", methods=["GET"])
+@app.route("/new_game", methods=["GET"])
 def player1_choice_get():
     return render_template("player1.html")
 
-@app.route("/player1", methods=["POST"])
+@app.route("/new_game", methods=["POST"])
 def player1_choice():
-    possibilities = ["rock","paper","scissors"]
+    possibilities = ["rock", "paper", "scissors"]
     move = request.form["move"]
     if move not in possibilities:
         flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
         return redirect(url_for("player1_choice_get"))
-    else: 
-        player_move = Game(
-            player="Player1",
-            move=request.form["move"]
-            )
-        session.add(player_move)
+    else:
+        new_game = Game(move1=request.form["move"])
+        session.add(new_game)
         session.commit()
-        return redirect(url_for("player2_choice_get"))
+        return redirect(url_for("player2_choice_get", id=new_game.id))
 
-@app.route("/player2", methods=["GET"])
-def player2_choice_get():
-    return render_template("player2.html")
+@app.route("/game/<id>", methods=["GET"])
+def player2_choice_get(id):
+    # loads the game by id
+    game = Game.query.get(id)
+    # check if move2 is defined.
+    # if it has been played, display the result
+    return render_template("player2.html", game=game)
 
-@app.route("/player2", methods=["POST"])
+@app.route("/game/<id>", methods=["POST"])
 def player2_choice():
-    possibilities = ["rock","paper","scissors"]
+    possibilities = ["rock", "paper", "scissors"]
     move = request.form["move"]
     if move not in possibilities:
         flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
         return redirect(url_for("player2_choice_get"))
-    else: 
+    else:
         player_move = Player(
             name="Player2",
             move=request.form["move"]
@@ -73,8 +74,3 @@ def player2_choice():
         session.add(player_move)
         session.commit()
         return redirect(url_for("compare"))
- 
-
-
-
-    

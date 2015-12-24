@@ -15,20 +15,21 @@ from .database import Base, engine
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-class Player(Base):
+'''class Player(Base):
     __tablename__ = "players"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(128))
-    this_game = relationship("Game", backref="player")
+    this_game = relationship("Game", backref="player")'''
 
 
 class Game(Base):
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True)
-    move = Column(String(128))
-    player_id = Column(Integer, ForeignKey('players.id'))
-
+    move1 = Column(String(128))
+    move2 = Column(String(128))
+    #player1 = Column(Integer, ForeignKey('players.id'))
+    #player2 = Column(Integer, ForeignKey('players.id'))
 
 Base.metadata.create_all(engine)
