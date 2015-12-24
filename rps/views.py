@@ -1,12 +1,15 @@
 from flask import Flask, flash, render_template, request, redirect, url_for
 from rps import app
 
-from .database import Player1, Player2, session
+from .database import Player, Game, session
 import os
 
 
-@app.route("/compare")
+'''@app.route("/compare", methods="GET")
 def compare(moves):
+    moves = session.query(Entry)
+    entries = session.query(Entry)
+        entries = entries.order_by(Entry.datetime.desc())
     if moves[0] == moves[1]:
         return None
     elif moves == ["rock", "paper"]:
@@ -21,6 +24,13 @@ def compare(moves):
         return 1
     elif moves == ["paper", "rock"]:
         return 0
+            compare.moves = [player1, player2]
+    if compare.moves == 0:
+        print("Player 1 wins!")
+    elif compare.moves == 1:
+        print("Player 2 wins!")
+    else:
+        print("You tied!")'''
     
 
 #@app.route("/")
@@ -30,17 +40,15 @@ def player1_choice_get():
 
 @app.route("/player1", methods=["POST"])
 def player1_choice():
-      
-    #print("Let's play a game of Rock, Paper, Scissors!")
-    #player1 = input("What is player 1's move? ")
     possibilities = ["rock","paper","scissors"]
-    move = Player1(
-        move=request.form["move"]
-    )
+    move = request.form["move"]
     if move not in possibilities:
         flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
         return redirect(url_for("player1_choice_get"))
     else: 
+        move = Player(
+            move=request.form["move"]
+            )
         session.add(move)
         session.commit()
         return redirect(url_for("player2_choice_get"))
@@ -49,26 +57,22 @@ def player1_choice():
 def player2_choice_get():
     return render_template("player2.html")
 
-@app.route("/player2/choice", methods=["POST"])
+@app.route("/player2", methods=["POST"])
 def player2_choice():
-    possibilities = ["rock","paper","scissors"]  
-    player2 = input("What is player 2's move? ")
-    while player2 not in possibilities:
+    possibilities = ["rock","paper","scissors"]
+    move = request.form["move"]
+    if move not in possibilities:
         flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
-    move = Player2(
-        title=request.form["title"]
-    )
-    session.add(move)
-    session.commit()
-    return redirect(url_for("player2"))
+        return redirect(url_for("player2_choice_get"))
+    else: 
+        move = Player2(
+            move=request.form["move"]
+            )
+        session.add(move)
+        session.commit()
+        return redirect(url_for("compare"))
  
-    '''compare.moves = [player1, player2]
-    if compare.moves == 0:
-        print("Player 1 wins!")
-    elif compare.moves == 1:
-        print("Player 2 wins!")
-    else:
-        print("You tied!")'''
+
 
 
     
