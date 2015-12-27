@@ -56,5 +56,4 @@ coverage.xml
 docs/_build/
 
 # PyBuilder
-target/env
-*.pyc
+target/

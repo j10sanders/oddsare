@@ -1,8 +1,8 @@
 import os
 from flask.ext.script import Manager
-from rps import app
-from rps.database import Game, session
-from rps.database import Base
+from oddsare import app
+from oddsare.database import Game, session
+from oddsare.database import Base
 
 manager = Manager(app)
 
@@ -11,9 +11,6 @@ def run():
     port = int(os.environ.get('PORT', 8080))
     print("https://jps-python-jonsanders-1.c9.io/")
     app.run(host='0.0.0.0', port=port)
-
-
-from rps.database import Game
 
 class DB(object):
     def __init__(self, metadata):
