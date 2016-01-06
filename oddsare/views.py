@@ -36,17 +36,15 @@ def player2_odds_get(id):
 @app.route("/game/<id>", methods=["POST"])
 def player2_odds(id):
     game = session.query(Game).get(id)
-    possibilities = [range(1, 101)]
-    odds = request.form["odds"]
-    if odds not in possibilities:
-        flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
-        new_game = Game(odds=request.form["odds"])
-        return redirect(url_for("player2_odds_get", id=new_game.id))
+    odds = int(request.form["odds"])
+    if odds >100 or odds < 2:
+        flash("That's not a possibility.  Please choose from a number between 2-100")
+        return redirect(url_for("player2_odds_get", id=id))
     else:
-        game.odds=request.form["odds"]
+        game.odds = odds
         session.add(game)
         session.commit()
-        return render_template("player2odds.html", game=game)
+        return redirect(url_for("player2_choice_get", id=id))
     
 @app.route("/game/<id>/player2choice", methods=["GET"])
 def player2_choice_get(id):
