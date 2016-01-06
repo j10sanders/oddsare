@@ -17,10 +17,10 @@ def player1_dare():
     new_game = Game(dare=request.form["dare"])
     session.add(new_game)
     session.commit()
-    return redirect(url_for("player2_odds_get", id=new_game.id))
+    return redirect(url_for("player2_range_get", id=new_game.id))
 
 @app.route("/game/<id>", methods=["GET"])
-def player2_odds_get(id):
+def player2_range_get(id):
     # loads the game by id
     game = session.query(Game).get(id)
     if game is None:
@@ -46,19 +46,17 @@ def player2_odds(id):
         session.commit()
         return redirect(url_for("player2_choice_get", id=id))
     
+    
+
 @app.route("/game/<id>/player2choice", methods=["GET"])
 def player2_choice_get(id):
+    print(id)
     # loads the game by id
     game = session.query(Game).get(id)
     if game is None:
         abort(404)
-    if game.move1:
-        result = oddsare.oddsare([game.dare, game.move1, game.move2])
-        return render_template("result.html", game=game, result=result)
-    # check if odds is defined.
-    # if it has been played, display the result
     else:
-        return render_template("player1odds.html", game=game)
+        return render_template("player2odds.html", game=game)
         
 @app.route("/game/<id>/player2choice", methods=["POST"])
 def player2_choice(id):
