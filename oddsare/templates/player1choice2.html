@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>
+    Player 1 rebound move for game {{game.id}}
+</h1>
+
+
+<form role="form" method="POST">
+    <div class="form-group">
+        <label for="move">What number do you choose out of the range you set ( {{game.rebound}} )?</label>
+        <input type="text" class="form-control" id="move3" name="move3" placeholder="e.g., 2" required>
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
+
+{% endblock %}

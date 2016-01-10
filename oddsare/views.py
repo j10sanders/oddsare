@@ -92,7 +92,7 @@ def player1_choice(id):
     except ValueError:
         flash("That's not an integer.")
     if move2 > game.odds or move2 < 1:
-        flash("That's not a possibility.  Please choose a number between (or equal to): 1 and " + str(game.odds))
+        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
         return redirect(url_for("player1_choice_get", id=id))
     else:
         game.move2=move2
@@ -126,4 +126,57 @@ def player1_rebound(id):
         game.rebound = rebound
         session.add(game)
         session.commit()
-        return redirect(url_for("player1_choice_get", id=id))
+        return redirect(url_for("player1_choice2_get", id=id))
+        
+@app.route("/game/<id>/player1choice2", methods=["GET"])
+def player1_choice2_get(id):
+    # loads the game by id
+    game = session.query(Game).get(id)
+    if game is None:
+        abort(404)
+    else:
+        return render_template("player1choice2.html", game=game)
+        
+@app.route("/game/<id>/player1choice2", methods=["POST"])
+def player1_choice2(id):
+    game = session.query(Game).get(id)
+    #possibilities = [range(0, game.odds)]
+    move3 = 0
+    try:
+        move3 = int(request.form["move3"])
+    except ValueError:
+        flash("That's not an integer.")
+    if move3 > game.rebound or move3 < 1:
+        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
+        return redirect(url_for("player1_choice2_get", id=id))
+    else:
+        game.move3=move3
+        session.add(game)
+        session.commit()
+        return redirect(url_for("player2_choice2_get", id=id))
+        
+@app.route("/game/<id>/player2choice2", methods=["GET"])
+def player2_choice2_get(id):
+    game = session.query(Game).get(id)
+    if game is None:
+        abort(404)
+    else:
+        return render_template("player2choice2.html", game=game)
+
+@app.route("/game/<id>/player2choice2", methods=["POST"])
+def player2_choice2(id):
+    game = session.query(Game).get(id)
+    #possibilities = [range(0, game.odds)]
+    try:
+        move4 = int(request.form["move4"])
+    except ValueError:
+        flash("That's not an integer.")
+    if move4 > game.rebound or move4 < 1:
+        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
+        return redirect(url_for("player2_choice2_get", id=id))
+    else:
+        game.move4=move4
+        session.add(game)
+        session.commit()
+        result = oddsare.compare(game.move3, game.move4)
+        return render_template("result.html", game=game, result=result, id=id)
