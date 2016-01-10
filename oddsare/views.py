@@ -33,10 +33,14 @@ def player2_range_get(id):
 @app.route("/game/<id>", methods=["POST"])
 def player2_odds(id):
     game = session.query(Game).get(id)
-    odds = int(request.form["odds"])
+    odds = 0
+    try:
+        odds = int(request.form["odds"])
+    except ValueError:
+        flash("That's not an integer.")
     if odds >100 or odds < 2:
-        flash("That's not a possibility.  Please choose from a number between 2-100")
-        return redirect(url_for("player2_odds_get", id=id))
+        flash("Please choose from a number between 2-100")
+        return redirect(url_for("player2_range_get", id=id))
     else:
         game.odds = odds
         session.add(game)
@@ -57,9 +61,13 @@ def player2_choice_get(id):
 def player2_choice(id):
     game = session.query(Game).get(id)
     #possibilities = [range(0, game.odds)]
-    move1 = int(request.form["move1"])
+    move1 = 0
+    try:
+        move1 = int(request.form["move1"])
+    except ValueError:
+        flash("That's not an integer.")
     if move1 > game.odds or move1 < 1:
-        flash("That's not a possibility.  Please choose a number between (or equal to): 1 and " + str(game.odds))
+        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
         return redirect(url_for("player2_choice_get", id=id))
     else:
         game.move1=move1
@@ -79,7 +87,10 @@ def player1_choice_get(id):
 def player1_choice(id):
     game = session.query(Game).get(id)
     #possibilities = [range(0, game.odds)]
-    move2 = int(request.form["move2"])
+    try:
+        move2 = int(request.form["move2"])
+    except ValueError:
+        flash("That's not an integer.")
     if move2 > game.odds or move2 < 1:
         flash("That's not a possibility.  Please choose a number between (or equal to): 1 and " + str(game.odds))
         return redirect(url_for("player1_choice_get", id=id))
@@ -100,11 +111,14 @@ def player1_rebound_get(id):
     #else:
     return render_template("player1rebound.html", game=game)
     
-'''@app.route("/game/<id>/rebound", methods=["POST"])
+@app.route("/game/<id>/rebound", methods=["POST"])
 def player1_rebound(id):
     game = session.query(Game).get(id)
     # loads the game by id
-    rebound = int(request.form["rebound"])
+    try:
+        rebound = int(request.form["rebound"])
+    except ValueError:
+        flash("That's not an integer.")
     if rebound > game.odds or rebound < 2:
         flash("That's not a possibility.  Please choose from a number between 2-100")
         return redirect(url_for("player1_rebound_get", id=id))
@@ -112,4 +126,4 @@ def player1_rebound(id):
         game.rebound = rebound
         session.add(game)
         session.commit()
-        return redirect(url_for("player1_choice_get", id=id))'''
+        return redirect(url_for("player1_choice_get", id=id))
