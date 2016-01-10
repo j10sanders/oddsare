@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>
+    Player 1 move for game {{game.id}}
+</h1>
+
+<form role="form" method="POST">
+    <div class="form-group">
+        <label for="move">What number do you choose out of {{game.odds}} ?</label>
+        <input type="text" class="form-control" id="move2" name="move2" placeholder="e.g., 2" required>
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
+{% endblock %}

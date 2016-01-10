@@ -6,12 +6,14 @@
 </h1>
 
 <h2>
-    {% if result is none %}
-    It's a draw :(
-    {% elif result == 1 %}
-    Player 2 wins!
+    {% if result == 1 %}
+    Sucka!  Player 2, you gotta {{game.dare}}
     {% elif result == 0 %}
-    Player 1 wins!
+    Player 2, you did a nice job.  Wanna rebound??
+    <p><br>
+    <form action="/game/<id>/rebound" method="GET">
+        <button type="submit" class="btn btn-default">Yes</button></p>
+    </form>
     {% endif %}
 </h2>
 {% endblock %}

@@ -24,6 +24,9 @@ class Game(Base):
     odds = Column(Integer())
     move1 = Column(Integer())
     move2 = Column(Integer())
+    #rebound = Column(Integer())
+    #move3 = Column(Integer())
+    #move4 = Column(Integer())
     #player1 = Column(Integer, ForeignKey('players.id'))
     #player2 = Column(Integer, ForeignKey('players.id'))
 

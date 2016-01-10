@@ -1,17 +1,10 @@
-def compare(moves):
-    if moves[0] == moves[1]:
-        return None
-    elif moves == ["rock", "paper"]:
+def compare(move1, move2):
+    if move1 == move2:
         return 1
-    elif moves == ["rock", "scissors"]:
-        return 0
-    elif moves == ["scissors", "rock"]:
-        return 1
-    elif moves == ["scissors", "paper"]:
-        return 0
-    elif moves == ["paper", "scissors"]:
-        return 1
-    elif moves == ["paper", "rock"]:
+    else:
         return 0
             
-        
+""" 
+1 = player 1 wins (player 2 has to do dare)
+0 = nobody wins.
+"""

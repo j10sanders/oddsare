@@ -25,9 +25,6 @@ def player2_range_get(id):
     game = session.query(Game).get(id)
     if game is None:
         abort(404)
-    '''if game.odds:
-        result = oddsare.oddsare([game.dare, game.move1, game.move2])
-        return render_template("result.html", game=game, result=result)'''
     # check if odds is defined.
     # if it has been played, display the result
     #else:
@@ -47,30 +44,72 @@ def player2_odds(id):
         return redirect(url_for("player2_choice_get", id=id))
     
     
-
 @app.route("/game/<id>/player2choice", methods=["GET"])
 def player2_choice_get(id):
-    print(id)
     # loads the game by id
     game = session.query(Game).get(id)
     if game is None:
         abort(404)
     else:
-        return render_template("player2odds.html", game=game)
+        return render_template("player2choice.html", game=game)
         
 @app.route("/game/<id>/player2choice", methods=["POST"])
 def player2_choice(id):
     game = session.query(Game).get(id)
-    possibilities = [range(0, game.odds)]
-    move1 = request.form["move1"]
-    if odds not in possibilities:
-        flash("That's not a possibility.  Please choose from " + str(possibilities)[1:-1])
-        new_game = Game(move1=request.form["move1"])
-        session.add(new_game)
-        session.commit()
-        return redirect(url_for("player2_choice_get", id=new_game.id))
+    #possibilities = [range(0, game.odds)]
+    move1 = int(request.form["move1"])
+    if move1 > game.odds or move1 < 1:
+        flash("That's not a possibility.  Please choose a number between (or equal to): 1 and " + str(game.odds))
+        return redirect(url_for("player2_choice_get", id=id))
     else:
-        game.odds=request.form["odds"]
+        game.move1=move1
         session.add(game)
         session.commit()
-        return render_template("player1odds.html", game=game)
+        return redirect(url_for("player1_choice_get", id=id))
+        
+@app.route("/game/<id>/player1choice", methods=["GET"])
+def player1_choice_get(id):
+    game = session.query(Game).get(id)
+    if game is None:
+        abort(404)
+    else:
+        return render_template("player1choice.html", game=game)
+
+@app.route("/game/<id>/player1choice", methods=["POST"])
+def player1_choice(id):
+    game = session.query(Game).get(id)
+    #possibilities = [range(0, game.odds)]
+    move2 = int(request.form["move2"])
+    if move2 > game.odds or move2 < 1:
+        flash("That's not a possibility.  Please choose a number between (or equal to): 1 and " + str(game.odds))
+        return redirect(url_for("player1_choice_get", id=id))
+    else:
+        game.move2=move2
+        session.add(game)
+        session.commit()
+        result = oddsare.compare(game.move1, game.move2)
+        return render_template("result.html", game=game, result=result)
+        
+        
+@app.route("/game/<id>/rebound", methods=["GET"])
+def player1_rebound_get(id):
+    # loads the game by id
+    game = session.query(Game).get(id)
+    # check if odds is defined.
+    # if it has been played, display the result
+    #else:
+    return render_template("player1rebound.html", game=game)
+    
+'''@app.route("/game/<id>/rebound", methods=["POST"])
+def player1_rebound(id):
+    game = session.query(Game).get(id)
+    # loads the game by id
+    rebound = int(request.form["rebound"])
+    if rebound > game.odds or rebound < 2:
+        flash("That's not a possibility.  Please choose from a number between 2-100")
+        return redirect(url_for("player1_rebound_get", id=id))
+    else:
+        game.rebound = rebound
+        session.add(game)
+        session.commit()
+        return redirect(url_for("player1_choice_get", id=id))'''
