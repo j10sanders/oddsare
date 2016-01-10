@@ -11,9 +11,8 @@
     {% elif result == 0 %}
     Player 2, you did a nice job.  Wanna rebound??
     <p><br>
-    <form action="/game/<id>/rebound" method="GET">
-        <button type="submit" class="btn btn-default">Yes</button></p>
-    </form>
+    <a href="{{ url_for('player1_rebound_get', id=id)}}">Yeah</a>
+    </p>
     {% endif %}
 </h2>
 {% endblock %}

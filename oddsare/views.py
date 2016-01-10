@@ -99,7 +99,7 @@ def player1_choice(id):
         session.add(game)
         session.commit()
         result = oddsare.compare(game.move1, game.move2)
-        return render_template("result.html", game=game, result=result)
+        return render_template("result.html", game=game, result=result, id=id)
         
         
 @app.route("/game/<id>/rebound", methods=["GET"])
