@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, request, redirect, url_for, abort
-from oddsare import app, oddsare
+from oddsare import app, oddsare, rebound
 from .database import Game, session
 import os
 
@@ -120,7 +120,7 @@ def player1_rebound(id):
     except ValueError:
         flash("That's not an integer.")
     if rebound > game.odds or rebound < 2:
-        flash("That's not a possibility.  Please choose from a number between 2-100")
+        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
         return redirect(url_for("player1_rebound_get", id=id))
     else:
         game.rebound = rebound
@@ -147,7 +147,7 @@ def player1_choice2(id):
     except ValueError:
         flash("That's not an integer.")
     if move3 > game.rebound or move3 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
+        flash("Please choose a number between (or equal to): 1 and " + str(game.rebound))
         return redirect(url_for("player1_choice2_get", id=id))
     else:
         game.move3=move3
@@ -166,17 +166,16 @@ def player2_choice2_get(id):
 @app.route("/game/<id>/player2choice2", methods=["POST"])
 def player2_choice2(id):
     game = session.query(Game).get(id)
-    #possibilities = [range(0, game.odds)]
     try:
         move4 = int(request.form["move4"])
     except ValueError:
         flash("That's not an integer.")
     if move4 > game.rebound or move4 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
+        flash("Please choose a number between (or equal to): 1 and " + str(game.rebound))
         return redirect(url_for("player2_choice2_get", id=id))
     else:
         game.move4=move4
         session.add(game)
         session.commit()
-        result = oddsare.compare(game.move3, game.move4)
-        return render_template("result.html", game=game, result=result, id=id)
+        result = rebound.compare(game.move3, game.move4)
+        return render_template("reboundresult.html", game=game, result=result, id=id)
