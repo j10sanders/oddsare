@@ -119,6 +119,8 @@ def player1_rebound(id):
         rebound = int(request.form["rebound"])
     except ValueError:
         flash("That's not an integer.")
+    except:
+        flash("That's not an integer.")
     if rebound > game.odds or rebound < 2:
         flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
         return redirect(url_for("player1_rebound_get", id=id))
