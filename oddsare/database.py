@@ -30,5 +30,5 @@ class Game(Base):
     #player1 = Column(Integer, ForeignKey('players.id'))
     #player2 = Column(Integer, ForeignKey('players.id'))
 
-Base.metadata.drop_all(engine)
+#Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

@@ -115,11 +115,10 @@ def player1_rebound_get(id):
 def player1_rebound(id):
     game = session.query(Game).get(id)
     # loads the game by id
+    rebound = 0 
     try:
         rebound = int(request.form["rebound"])
     except ValueError:
-        flash("That's not an integer.")
-    except:
         flash("That's not an integer.")
     if rebound > game.odds or rebound < 2:
         flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
