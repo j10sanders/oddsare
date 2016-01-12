@@ -99,7 +99,7 @@ def player1_choice(id):
         session.add(game)
         session.commit()
         result = oddsare.compare(game.move1, game.move2)
-        if game.odds = 2:
+        if game.odds == 2:
             return render_template("resultoutoftwo.html", game=game, result=result, id=id)
         else:
             return render_template("result.html", game=game, result=result, id=id)
@@ -182,7 +182,7 @@ def player2_choice2(id):
         session.add(game)
         session.commit()
         result = rebound.compare(game.move3, game.move4)
-        if game.rebound = 2:
+        if game.rebound == 2:
             return render_template("reboundresultoutoftwo.html", game=game, result=result, id=id)
         else:
             return render_template("reboundresult.html", game=game, result=result, id=id)
