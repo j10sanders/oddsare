@@ -39,7 +39,7 @@ def player2_odds(id):
     except ValueError:
         flash("That's not an integer.")
     if odds >100 or odds < 2:
-        flash("Please choose from a number between 2-100")
+        flash("Pick a number; 2-100")
         return redirect(url_for("player2_range_get", id=id))
     else:
         game.odds = odds
@@ -99,7 +99,10 @@ def player1_choice(id):
         session.add(game)
         session.commit()
         result = oddsare.compare(game.move1, game.move2)
-        return render_template("result.html", game=game, result=result, id=id)
+        if game.odds = 2:
+            return render_template("resultoutoftwo.html", game=game, result=result, id=id)
+        else:
+            return render_template("result.html", game=game, result=result, id=id)
         
         
 @app.route("/game/<id>/rebound", methods=["GET"])
@@ -179,4 +182,7 @@ def player2_choice2(id):
         session.add(game)
         session.commit()
         result = rebound.compare(game.move3, game.move4)
-        return render_template("reboundresult.html", game=game, result=result, id=id)
+        if game.rebound = 2:
+            return render_template("reboundresultoutoftwo.html", game=game, result=result, id=id)
+        else:
+            return render_template("reboundresult.html", game=game, result=result, id=id)
