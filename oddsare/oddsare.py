@@ -1,5 +1,5 @@
-def compare(move1, move2):
-    if move1 == move2:
+def compare(moveA, moveB):
+    if moveA == moveB:
         return 1
     else:
         return 0
