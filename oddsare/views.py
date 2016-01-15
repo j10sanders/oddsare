@@ -1,8 +1,26 @@
 from flask import Flask, flash, render_template, request, redirect, url_for, abort
 from oddsare import app, oddsare, rebound
-from .database import Game, session
+from .database import Game, session, User
 import os
+from flask.ext.login import login_user
+from werkzeug.security import check_password_hash
 
+@app.route("/login", methods=["GET"])
+def login_get():
+    return render_template("login.html")
+
+@app.route("/login", methods=["POST"])
+def login_post():
+    email = request.form["email"]
+    password = request.form["password"]
+    user = session.query(User).filter_by(email=email).first()
+    if not user or not check_password_hash(user.password, password):
+        flash("Incorrect username or password", "danger")
+        return redirect(url_for("login_get"))
+
+    login_user(user)
+    return redirect(request.args.get('next') or url_for("entries"))
+    
 @app.route("/")
 @app.route("/game", methods=["GET"])
 @app.route("/new_game", methods=["GET"])
@@ -39,7 +57,7 @@ def player2_odds(id):
     except ValueError:
         flash("That's not an integer.")
     if odds >100 or odds < 2:
-        flash("Pick a number; 2-100")
+        flash("Please choose from a number between 2-100")
         return redirect(url_for("player2_range_get", id=id))
     else:
         game.odds = odds
@@ -99,10 +117,7 @@ def player1_choice(id):
         session.add(game)
         session.commit()
         result = oddsare.compare(game.move1, game.move2)
-        if game.odds == 2:
-            return render_template("resultoutoftwo.html", game=game, result=result, id=id)
-        else:
-            return render_template("result.html", game=game, result=result, id=id)
+        return render_template("result.html", game=game, result=result, id=id)
         
         
 @app.route("/game/<id>/rebound", methods=["GET"])
@@ -182,7 +197,4 @@ def player2_choice2(id):
         session.add(game)
         session.commit()
         result = rebound.compare(game.move3, game.move4)
-        if game.rebound == 2:
-            return render_template("reboundresultoutoftwo.html", game=game, result=result, id=id)
-        else:
-            return render_template("reboundresult.html", game=game, result=result, id=id)
+        return render_template("reboundresult.html", game=game, result=result, id=id)

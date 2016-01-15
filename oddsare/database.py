@@ -11,10 +11,9 @@ session = Session()
 
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from .database import Base, engine
-
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-
+from flask.ext.login import UserMixin
 
 class Game(Base):
     __tablename__ = "games"
@@ -29,6 +28,15 @@ class Game(Base):
     move4 = Column(Integer())
     #player1 = Column(Integer, ForeignKey('players.id'))
     #player2 = Column(Integer, ForeignKey('players.id'))
+
+
+class User(Base, UserMixin):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(128))
+    email = Column(String(128), unique=True)
+    password = Column(String(128))
 
 #Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
