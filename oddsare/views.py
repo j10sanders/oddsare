@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, request, redirect, url_for, abort
-from oddsare import app, oddsare, rebound
+from oddsare import app, oddsare
 from .database import Game, session, User
 import os
 from flask.ext.login import login_user
