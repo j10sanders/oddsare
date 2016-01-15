@@ -196,5 +196,5 @@ def player2_choice2(id):
         game.move4=move4
         session.add(game)
         session.commit()
-        result = rebound.compare(game.move3, game.move4)
+        result = oddsare.compare(game.move3, game.move4)
         return render_template("reboundresult.html", game=game, result=result, id=id)
