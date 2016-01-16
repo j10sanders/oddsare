@@ -39,4 +39,4 @@ class User(Base, UserMixin):
     password = Column(String(128))
 
 Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
