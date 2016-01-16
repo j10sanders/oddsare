@@ -1,7 +1,7 @@
 import os
 
 class DevelopmentConfig(object):
-    SQLALCHEMY_DATABASE_URI = "postgresql://ubuntu:thinkful@localhost:5432/blogful"
+    SQLALCHEMY_DATABASE_URI =  os.environ["DATABASE_URL"]
     DEBUG = True
     SECRET_KEY = os.environ.get("BLOGFUL_SECRET_KEY", "hehe")
     

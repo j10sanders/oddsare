@@ -26,9 +26,9 @@ class Game(Base):
     rebound = Column(Integer())
     move3 = Column(Integer())
     move4 = Column(Integer())
-    #player1 = Column(Integer, ForeignKey('players.id'))
-    #player2 = Column(Integer, ForeignKey('players.id'))
-
+    player1 = Column(Integer, ForeignKey('users.id'))
+    player2 = Column(Integer, ForeignKey('users.id'))
+    #player1id= relationship("User", uselist=False, backref="player1")
 
 class User(Base, UserMixin):
     __tablename__ = "users"
@@ -39,4 +39,4 @@ class User(Base, UserMixin):
     password = Column(String(128))
 
 #Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)

@@ -73,8 +73,8 @@ def player2_odds(id):
         game.odds = odds
         session.add(game)
         session.commit()
-        print(game.player1)
-        print(game.player2)
+        #print(game.player1(users.id))
+        #print(game.player2.name)
         return redirect(url_for("player2_choice_get", id=id))
     
     
