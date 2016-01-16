@@ -2,7 +2,7 @@ from flask import Flask, flash, render_template, request, redirect, url_for, abo
 from oddsare import app, oddsare
 from .database import Game, session, User
 import os
-from flask.ext.login import login_user
+from flask.ext.login import login_user , logout_user , current_user , login_required
 from werkzeug.security import check_password_hash
 
 @app.route("/login", methods=["GET"])
@@ -19,7 +19,7 @@ def login_post():
         return redirect(url_for("login_get"))
 
     login_user(user)
-    return redirect(request.args.get('next') or url_for("entries"))
+    return redirect(request.args.get('next') or url_for("player1_dare_get"))
     
 @app.route("/")
 @app.route("/game", methods=["GET"])
@@ -32,7 +32,10 @@ def player1_dare_get():
 @app.route("/new_game", methods=["POST"])
 def player1_dare():
     dare = request.form["dare"]
-    new_game = Game(dare=request.form["dare"])
+    if current_user.is_authenticated:
+        new_game = Game(dare=request.form["dare"], player1=current_user.id)
+    else:
+        new_game = Game(dare=request.form["dare"])
     session.add(new_game)
     session.commit()
     return redirect(url_for("player2_range_get", id=new_game.id))
