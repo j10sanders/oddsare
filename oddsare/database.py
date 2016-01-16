@@ -38,5 +38,5 @@ class User(Base, UserMixin):
     email = Column(String(128), unique=True)
     password = Column(String(128))
 
-Base.metadata.drop_all(engine)
-#Base.metadata.create_all(engine)
+#Base.metadata.drop_all(engine)
+Base.metadata.create_all(engine)
