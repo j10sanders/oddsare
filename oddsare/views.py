@@ -25,7 +25,10 @@ def login_post():
 @app.route("/game", methods=["GET"])
 @app.route("/new_game", methods=["GET"])
 def player1_dare_get():
-    return render_template("player1dare.html")
+    if current_user.is_authenticated:
+        return render_template("player1dare.html")
+    else:
+        return render_template("anonplayer1dare.html")
 
 @app.route("/", methods=["POST"])
 @app.route("/game", methods=["POST"])
@@ -59,6 +62,10 @@ def player2_odds(id):
         odds = int(request.form["odds"])
     except ValueError:
         flash("That's not an integer...", "danger")
+    if current_user.is_authenticated and game.player1 != current_user.id:
+        game.player2 = current_user.id
+    else:
+        game.player2 = None
     if odds >100 or odds < 2:
         flash("Please choose from a number between 2-100", "danger")
         return redirect(url_for("player2_range_get", id=id))
@@ -66,6 +73,8 @@ def player2_odds(id):
         game.odds = odds
         session.add(game)
         session.commit()
+        print(game.player1)
+        print(game.player2)
         return redirect(url_for("player2_choice_get", id=id))
     
     
