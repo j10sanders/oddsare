@@ -58,9 +58,9 @@ def player2_odds(id):
     try:
         odds = int(request.form["odds"])
     except ValueError:
-        flash("That's not an integer.")
+        flash("That's not an integer...", "danger")
     if odds >100 or odds < 2:
-        flash("Please choose from a number between 2-100")
+        flash("Please choose from a number between 2-100", "danger")
         return redirect(url_for("player2_range_get", id=id))
     else:
         game.odds = odds
@@ -86,9 +86,9 @@ def player2_choice(id):
     try:
         move1 = int(request.form["move1"])
     except ValueError:
-        flash("That's not an integer.")
+        flash("That's not an integer.", "danger")
     if move1 > game.odds or move1 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
+        flash("Please choose a number between (or equal to): 1 and " + str(game.odds), "danger")
         return redirect(url_for("player2_choice_get", id=id))
     else:
         game.move1=move1
@@ -113,7 +113,7 @@ def player1_choice(id):
     except ValueError:
         flash("That's not an integer.")
     if move2 > game.odds or move2 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
+        flash("Please choose a number between (or equal to): 1 and " + str(game.odds), "danger")
         return redirect(url_for("player1_choice_get", id=id))
     else:
         game.move2=move2
@@ -142,7 +142,7 @@ def player1_rebound(id):
     except ValueError:
         flash("That's not an integer.")
     if rebound > game.odds or rebound < 2:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.odds))
+        flash("Please choose a number between (or equal to): 1 and " + str(game.odds), "danger")
         return redirect(url_for("player1_rebound_get", id=id))
     else:
         game.rebound = rebound
@@ -169,7 +169,7 @@ def player1_choice2(id):
     except ValueError:
         flash("That's not an integer.")
     if move3 > game.rebound or move3 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.rebound))
+        flash("Please choose a number between (or equal to): 1 and " + str(game.rebound), "danger")
         return redirect(url_for("player1_choice2_get", id=id))
     else:
         game.move3=move3
@@ -193,7 +193,7 @@ def player2_choice2(id):
     except ValueError:
         flash("That's not an integer.")
     if move4 > game.rebound or move4 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.rebound))
+        flash("Please choose a number between (or equal to): 1 and " + str(game.rebound), "danger")
         return redirect(url_for("player2_choice2_get", id=id))
     else:
         game.move4=move4
