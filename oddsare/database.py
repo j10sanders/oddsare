@@ -14,6 +14,7 @@ from .database import Base, engine
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from flask.ext.login import UserMixin
+from datetime import datetime
 
 class Game(Base):
     __tablename__ = "game"
@@ -46,6 +47,21 @@ class User(Base, UserMixin):
         self.password = password
         self.email = email
         self.registered_on = datetime.utcnow()
+        
+    def is_authenticated(self):
+        return True
+ 
+    def is_active(self):
+        return True
+ 
+    def is_anonymous(self):
+        return False
+ 
+    def get_id(self):
+        return unicode(self.id)
+ 
+    def __repr__(self):
+        return '<User %r>' % (self.username)
 
 #Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

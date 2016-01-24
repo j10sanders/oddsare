@@ -6,6 +6,18 @@ import os
 from flask.ext.login import login_user , logout_user , current_user , login_required
 from werkzeug.security import check_password_hash
 
+@app.route("/register", methods=["GET"])
+def register_get():
+    return render_template('register.html')
+
+@app.route("/register", methods=["POST"])
+def register_post():
+    user = User(request.form['username'] , request.form['password'],request.form['email'])
+    session.add(user)
+    session.commit()
+    flash('User successfully registered')
+    return redirect(url_for('login_get'))
+    
 @app.route("/login", methods=["GET"])
 def login_get():
     return render_template("login.html")
