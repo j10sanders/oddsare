@@ -1,5 +1,6 @@
 from flask import Flask, flash, render_template, request, redirect, url_for, abort
 from oddsare import app, oddsare
+from oddsare.oddsare import InvalidNumberException
 from .database import Game, session, User
 import os
 from flask.ext.login import login_user , logout_user , current_user , login_required
@@ -49,33 +50,29 @@ def player2_range_get(id):
     game = session.query(Game).get(id)
     if game is None:
         abort(404)
-    # check if odds is defined.
-    # if it has been played, display the result
-    #else:
+    elif game.odds:
+        return redirect(url_for("player1_dare_get", id=id))
     return render_template("player2setrange.html", game=game)
 
 @app.route("/game/<id>", methods=["POST"])
 def player2_odds(id):
     game = session.query(Game).get(id)
-    odds = 0
     try:
-        odds = int(request.form["odds"])
-    except ValueError:
-        flash("That's not an integer...", "danger")
+        odds = oddsare.valid_number(request.form["odds"], 100)
+    except InvalidNumberException as e:
+        flash(str(e), "danger")
+        return redirect(url_for("player2_range_get", id=id))
     if current_user.is_authenticated and game.player1 != current_user.id:
         game.player2 = current_user.id
     else:
-        game.player2 = None
-    if odds >100 or odds < 2:
-        flash("Please choose from a number between 2-100", "danger")
-        return redirect(url_for("player2_range_get", id=id))
-    else:
-        game.odds = odds
-        session.add(game)
-        session.commit()
-        #print(game.player1(users.id))
-        #print(game.player2.name)
-        return redirect(url_for("player2_choice_get", id=id))
+        player1 = session.query(User).get(1)
+        print(player1.username)
+    game.odds = odds
+    session.add(game)
+    session.commit()
+    #print(game.player1(users.id))
+    #print(game.player2.name)
+    return redirect(url_for("player2_choice_get", id=id))
     
     
 @app.route("/game/<id>/player2choice", methods=["GET"])
@@ -84,129 +81,113 @@ def player2_choice_get(id):
     game = session.query(Game).get(id)
     if game is None:
         abort(404)
+    elif game.move1:
+        return redirect(url_for("player1_choice_get", id=id))
     else:
         return render_template("player2choice.html", game=game)
         
 @app.route("/game/<id>/player2choice", methods=["POST"])
 def player2_choice(id):
     game = session.query(Game).get(id)
-    #possibilities = [range(0, game.odds)]
-    move1 = 0
     try:
-        move1 = int(request.form["move1"])
-    except ValueError:
-        flash("That's not an integer.", "danger")
-    if move1 > game.odds or move1 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.odds), "danger")
+        move1 = oddsare.valid_number(request.form["move1"], game.odds)
+    except InvalidNumberException as e:
+        flash(str(e), "danger")
         return redirect(url_for("player2_choice_get", id=id))
-    else:
-        game.move1=move1
-        session.add(game)
-        session.commit()
-        return redirect(url_for("player1_choice_get", id=id))
+    game.move1=move1
+    session.add(game)
+    session.commit()
+    return redirect(url_for("player1_choice_get", id=id))
         
 @app.route("/game/<id>/player1choice", methods=["GET"])
 def player1_choice_get(id):
     game = session.query(Game).get(id)
     if game is None:
         abort(404)
+    elif game.move2:
+        return render_template("result.html", game=game, result=result, id=id)
     else:
         return render_template("player1choice.html", game=game)
 
 @app.route("/game/<id>/player1choice", methods=["POST"])
 def player1_choice(id):
     game = session.query(Game).get(id)
-    #possibilities = [range(0, game.odds)]
     try:
-        move2 = int(request.form["move2"])
-    except ValueError:
-        flash("That's not an integer.", "danger")
-    if move2 > game.odds or move2 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.odds), "danger")
-        return redirect(url_for("player1_choice_get", id=id))
-    else:
-        game.move2=move2
-        session.add(game)
-        session.commit()
-        result = oddsare.compare(game.move1, game.move2)
-        return render_template("result.html", game=game, result=result, id=id)
-        
+        move2 = oddsare.valid_number(request.form["move2"], game.odds)
+    except InvalidNumberException as e:
+        flash(str(e), "danger")
+        return redirect(url_for("player2_choice_get", id=id))
+    game.move2=move2
+    session.add(game)
+    session.commit()
+    result = oddsare.compare(game.move1, game.move2)
+    return render_template("result.html", game=game, result=result, id=id)
         
 @app.route("/game/<id>/rebound", methods=["GET"])
 def player1_rebound_get(id):
-    # loads the game by id
     game = session.query(Game).get(id)
-    # check if odds is defined.
-    # if it has been played, display the result
-    #else:
+    if game is None:
+        abort(404)
+    elif game.rebound:
+        return redirect(url_for("player1_choice2_get", id=id))
     return render_template("player1rebound.html", game=game)
     
 @app.route("/game/<id>/rebound", methods=["POST"])
 def player1_rebound(id):
     game = session.query(Game).get(id)
-    # loads the game by id
-    rebound = 0 
     try:
-        rebound = int(request.form["rebound"])
-    except ValueError:
-        flash("That's not an integer.", "danger")
-    if rebound > game.odds or rebound < 2:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.odds), "danger")
+        rebound = oddsare.valid_number(request.form["rebound"], game.odds)
+    except InvalidNumberException as e:
+        flash(str(e), "danger")
         return redirect(url_for("player1_rebound_get", id=id))
-    else:
-        game.rebound = rebound
-        session.add(game)
-        session.commit()
-        return redirect(url_for("player1_choice2_get", id=id))
+    game.rebound = rebound
+    session.add(game)
+    session.commit()
+    return redirect(url_for("player1_choice2_get", id=id))
         
 @app.route("/game/<id>/player1choice2", methods=["GET"])
 def player1_choice2_get(id):
-    # loads the game by id
     game = session.query(Game).get(id)
     if game is None:
         abort(404)
+    elif game.move3:
+        return redirect(url_for("player2_choice2_get", id=id))
     else:
         return render_template("player1choice2.html", game=game)
         
 @app.route("/game/<id>/player1choice2", methods=["POST"])
 def player1_choice2(id):
     game = session.query(Game).get(id)
-    #possibilities = [range(0, game.odds)]
-    move3 = 0
     try:
-        move3 = int(request.form["move3"])
-    except ValueError:
-        flash("That's not an integer.", "danger")
-    if move3 > game.rebound or move3 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.rebound), "danger")
+        move3 = oddsare.valid_number(request.form["move3"], game.rebound)
+    except InvalidNumberException as e:
+        flash(str(e), "danger")
         return redirect(url_for("player1_choice2_get", id=id))
-    else:
-        game.move3=move3
-        session.add(game)
-        session.commit()
-        return redirect(url_for("player2_choice2_get", id=id))
+    game.move3=move3
+    session.add(game)
+    session.commit()
+    return redirect(url_for("player2_choice2_get", id=id))
         
 @app.route("/game/<id>/player2choice2", methods=["GET"])
 def player2_choice2_get(id):
     game = session.query(Game).get(id)
     if game is None:
         abort(404)
+    elif game.move4:
+        return render_template("reboundresult.html", game=game, result=result, id=id)    
     else:
-        return render_template("player2choice2.html", game=game)
-
+        return render_template("player2choice2.html", game = game)
+        
 @app.route("/game/<id>/player2choice2", methods=["POST"])
 def player2_choice2(id):
     game = session.query(Game).get(id)
     try:
-        move4 = int(request.form["move4"])
-    except ValueError:
-        flash("That's not an integer.", "danger")
-    if move4 > game.rebound or move4 < 1:
-        flash("Please choose a number between (or equal to): 1 and " + str(game.rebound), "danger")
+        move4 = oddsare.valid_number(request.form["move4"], game.rebound)
+    except InvalidNumberException as e:
+        flash(str(e), "danger")
         return redirect(url_for("player2_choice2_get", id=id))
-    else:
-        game.move4=move4
-        session.add(game)
-        session.commit()
-        result = oddsare.compare(game.move3, game.move4)
-        return render_template("reboundresult.html", game=game, result=result, id=id)
+    game.move4=move4
+    session.add(game)
+    session.commit()
+    result = oddsare.compare(game.move3, game.move4)
+    return render_template("reboundresult.html", game=game, result=result, id=id)

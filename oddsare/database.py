@@ -16,7 +16,7 @@ from sqlalchemy.orm import relationship
 from flask.ext.login import UserMixin
 
 class Game(Base):
-    __tablename__ = "games"
+    __tablename__ = "game"
 
     id = Column(Integer, primary_key=True)
     dare = Column(String(128))
@@ -26,17 +26,26 @@ class Game(Base):
     rebound = Column(Integer())
     move3 = Column(Integer())
     move4 = Column(Integer())
-    player1 = Column(Integer, ForeignKey('users.id'))
-    player2 = Column(Integer, ForeignKey('users.id'))
-    #player1id= relationship("User", uselist=False, backref="player1")
-
+    player1 = Column(Integer, ForeignKey('user.id'))
+    player2 = Column(Integer, ForeignKey('user.id'))
+    #user1= relationship("User", uselist=False, backref="user1", foreign_keys=[player1])    
+    #user2= relationship("User", uselist=False, backref="user2", foreign_keys=[player2])
+    
 class User(Base, UserMixin):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(128))
+    username = Column(String(20), unique = True, index = True)
     email = Column(String(128), unique=True)
-    password = Column(String(128))
+    password = Column(String(20))
+    registered_on = Column('registered_on', DateTime)
+    games = relationship('Game', viewonly=True, primaryjoin='or_(User.id == Game.player1, User.id == Game.player2)')
+    
+    def __init__(self, username, password, email):
+        self.username = username
+        self.password = password
+        self.email = email
+        self.registered_on = datetime.utcnow()
 
 #Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
