@@ -12,7 +12,7 @@ def register_get():
 
 @app.route("/register", methods=["POST"])
 def register_post():
-    user = User(request.form['username'] , request.form['password'],request.form['email'])
+    user = User(username=request.form['username'], password=request.form['password'], email=request.form['email'])
     session.add(user)
     session.commit()
     flash('User successfully registered')
