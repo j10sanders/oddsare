@@ -36,13 +36,13 @@ class User(Base, UserMixin):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True)
-    username = Column(String(20), unique = True, index = True)
+    username = Column(String(128), unique = True, index = True)
     email = Column(String(128), unique=True)
-    password = Column(String(20))
+    password = Column(String(128))
     registered_on = Column('registered_on', DateTime)
     games = relationship('Game', viewonly=True, primaryjoin='or_(User.id == Game.player1, User.id == Game.player2)')
     
-    def __init__(self, username, password, email):
+    '''def __init__(self, username, password, email):
         self.username = username
         self.password = password
         self.email = email
@@ -61,7 +61,7 @@ class User(Base, UserMixin):
         return unicode(self.id)
  
     def __repr__(self):
-        return '<User %r>' % (self.username)
+        return '<User %r>' % (self.username)'''
 
 #Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

@@ -4,7 +4,8 @@ from oddsare.oddsare import InvalidNumberException
 from .database import Game, session, User
 import os
 from flask.ext.login import login_user , logout_user , current_user , login_required
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 @app.route("/register", methods=["GET"])
 def register_get():
@@ -12,14 +13,16 @@ def register_get():
 
 @app.route("/register", methods=["POST"])
 def register_post():
-    user = User(username=request.form['username'], password=request.form['password'], email=request.form['email'])
+    user = User(username=request.form['username'], password=generate_password_hash(request.form['password']), email=request.form['email'])
     session.add(user)
     session.commit()
     flash('User successfully registered')
+    print(session.query(User).all())
     return redirect(url_for('login_get'))
     
 @app.route("/login", methods=["GET"])
 def login_get():
+    print(session.query(User.password).all())
     return render_template("login.html")
 
 @app.route("/login", methods=["POST"])
@@ -30,8 +33,8 @@ def login_post():
     if not user or not check_password_hash(user.password, password):
         flash("Incorrect username or password", "danger")
         return redirect(url_for("login_get"))
-
     login_user(user)
+    flash('Logged in successfully')
     return redirect(request.args.get('next') or url_for("player1_dare_get"))
     
 @app.route("/")
@@ -50,6 +53,12 @@ def player1_dare():
     dare = request.form["dare"]
     if current_user.is_authenticated:
         new_game = Game(dare=request.form["dare"], player1=current_user.id)
+        user = User(id = new_game.player1)
+        print(new_game.player1)
+        print(user.username)
+        print(current_user.id)
+        print(user)
+        print(user.id)
     else:
         new_game = Game(dare=request.form["dare"])
     session.add(new_game)
@@ -106,6 +115,7 @@ def player2_choice(id):
     except InvalidNumberException as e:
         flash(str(e), "danger")
         return redirect(url_for("player2_choice_get", id=id))
+    print(game.player1.username)
     game.move1=move1
     session.add(game)
     session.commit()
