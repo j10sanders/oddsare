@@ -29,8 +29,8 @@ class Game(Base):
     move4 = Column(Integer())
     player1 = Column(Integer, ForeignKey('user.id'))
     player2 = Column(Integer, ForeignKey('user.id'))
-    #user1= relationship("User", uselist=False, backref="user1", foreign_keys=[player1])    
-    #user2= relationship("User", uselist=False, backref="user2", foreign_keys=[player2])
+    user1= relationship("User", uselist=False, backref="user1", foreign_keys=[player1])    
+    user2= relationship("User", uselist=False, backref="user2", foreign_keys=[player2])
     
 class User(Base, UserMixin):
     __tablename__ = "user"
@@ -40,28 +40,7 @@ class User(Base, UserMixin):
     email = Column(String(128), unique=True)
     password = Column(String(128))
     registered_on = Column('registered_on', DateTime)
-    games = relationship('Game', viewonly=True, primaryjoin='or_(User.id == Game.player1, User.id == Game.player2)')
-    
-    '''def __init__(self, username, password, email):
-        self.username = username
-        self.password = password
-        self.email = email
-        self.registered_on = datetime.utcnow()
-        
-    def is_authenticated(self):
-        return True
- 
-    def is_active(self):
-        return True
- 
-    def is_anonymous(self):
-        return False
- 
-    def get_id(self):
-        return unicode(self.id)
- 
-    def __repr__(self):
-        return '<User %r>' % (self.username)'''
+    games = relationship('Game', viewonly=True, backref="user", primaryjoin='or_(User.id == Game.player1, User.id == Game.player2)')
 
 #Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

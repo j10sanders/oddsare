@@ -12,9 +12,9 @@
 
 <h2>
     {% if result == 1 %}
-    Sucka!  Player 1, you gotta {{game.dare}}
+    Sucka!  {{game.user1.username | default("Player 1")}}, you gotta {{game.dare}}
     {% elif result == 0 %}
-    Player 2, you a sucka.  Since your opponent set the odds out of two, and you guessed wrong, you gotta {{game.dare}}
+    {{game.user2.username | default("Player 2")}}, you a sucka.  Since your opponent set the odds out of two, and you guessed wrong, you gotta {{game.dare}}
     <p><br>
     <a href="{{ url_for('player1_dare_get') }}">Yeah</a>
     </p>

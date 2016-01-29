@@ -3,7 +3,7 @@ from oddsare import app, oddsare
 from oddsare.oddsare import InvalidNumberException
 from .database import Game, session, User
 import os
-from flask.ext.login import login_user , logout_user , current_user , login_required
+from flask.ext.login import login_user , logout_user , current_user , login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -17,12 +17,10 @@ def register_post():
     session.add(user)
     session.commit()
     flash('User successfully registered')
-    print(session.query(User).all())
     return redirect(url_for('login_get'))
     
 @app.route("/login", methods=["GET"])
 def login_get():
-    print(session.query(User.password).all())
     return render_template("login.html")
 
 @app.route("/login", methods=["POST"])
@@ -37,14 +35,19 @@ def login_post():
     flash('Logged in successfully')
     return redirect(request.args.get('next') or url_for("player1_dare_get"))
     
+@app.route("/logout")
+@login_required
+def logout(id):
+    logout_user()
+    return redirect(request.args.get('next'))
+    
 @app.route("/")
 @app.route("/game", methods=["GET"])
 @app.route("/new_game", methods=["GET"])
+@login_required
 def player1_dare_get():
-    if current_user.is_authenticated:
-        return render_template("player1dare.html")
-    else:
-        return render_template("anonplayer1dare.html")
+    return render_template("player1dare.html")
+
 
 @app.route("/", methods=["POST"])
 @app.route("/game", methods=["POST"])
@@ -53,19 +56,15 @@ def player1_dare():
     dare = request.form["dare"]
     if current_user.is_authenticated:
         new_game = Game(dare=request.form["dare"], player1=current_user.id)
-        user = User(id = new_game.player1)
-        print(new_game.player1)
-        print(user.username)
-        print(current_user.id)
-        print(user)
-        print(user.id)
     else:
         new_game = Game(dare=request.form["dare"])
     session.add(new_game)
     session.commit()
+    logout_user()
     return redirect(url_for("player2_range_get", id=new_game.id))
 
 @app.route("/game/<id>", methods=["GET"])
+@login_required
 def player2_range_get(id):
     # loads the game by id
     game = session.query(Game).get(id)
@@ -73,6 +72,7 @@ def player2_range_get(id):
         abort(404)
     elif game.odds:
         return redirect(url_for("player1_dare_get", id=id))
+    game.player2 = current_user.id
     return render_template("player2setrange.html", game=game)
 
 @app.route("/game/<id>", methods=["POST"])
@@ -83,11 +83,11 @@ def player2_odds(id):
     except InvalidNumberException as e:
         flash(str(e), "danger")
         return redirect(url_for("player2_range_get", id=id))
-    if current_user.is_authenticated and game.player1 != current_user.id:
-        game.player2 = current_user.id
-    else:
-        player1 = session.query(User).get(1)
-        print(player1.username)
+    #if current_user.is_authenticated and game.player1 != current_user.id:
+        #game.player2 = current_user.id
+    print(game.user1.username)
+    print(game.user2.username)
+    logout_user()
     game.odds = odds
     session.add(game)
     session.commit()
@@ -115,7 +115,7 @@ def player2_choice(id):
     except InvalidNumberException as e:
         flash(str(e), "danger")
         return redirect(url_for("player2_choice_get", id=id))
-    print(game.player1.username)
+    #print(game.player1.username)
     game.move1=move1
     session.add(game)
     session.commit()
@@ -124,12 +124,13 @@ def player2_choice(id):
 @app.route("/game/<id>/player1choice", methods=["GET"])
 def player1_choice_get(id):
     game = session.query(Game).get(id)
+    player1 = session.query(User).get(game.player1)
     if game is None:
         abort(404)
     elif game.move2:
         return render_template("result.html", game=game, result=result, id=id)
     else:
-        return render_template("player1choice.html", game=game)
+        return render_template("player1choice.html", game=game, player1=player1)
 
 @app.route("/game/<id>/player1choice", methods=["POST"])
 def player1_choice(id):
