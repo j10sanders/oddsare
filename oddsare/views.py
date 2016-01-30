@@ -19,15 +19,16 @@ def register_post():
     flash('User successfully registered')
     return redirect(url_for('login_get'))
     
+@app.route("/")
 @app.route("/login", methods=["GET"])
 def login_get():
     return render_template("login.html")
 
 @app.route("/login", methods=["POST"])
 def login_post():
-    email = request.form["email"]
+    username = request.form["username"]
     password = request.form["password"]
-    user = session.query(User).filter_by(email=email).first()
+    user = session.query(User).filter_by(username=username).first()
     if not user or not check_password_hash(user.password, password):
         flash("Incorrect username or password", "danger")
         return redirect(url_for("login_get"))
@@ -37,11 +38,11 @@ def login_post():
     
 @app.route("/logout")
 @login_required
-def logout(id):
+def logout():
     logout_user()
-    return redirect(request.args.get('next'))
+    return redirect(request.args.get('next') or url_for("login_get"))
     
-@app.route("/")
+
 @app.route("/game", methods=["GET"])
 @app.route("/new_game", methods=["GET"])
 @login_required
@@ -53,15 +54,16 @@ def player1_dare_get():
 @app.route("/game", methods=["POST"])
 @app.route("/new_game", methods=["POST"])
 def player1_dare():
-    dare = request.form["dare"]
     if current_user.is_authenticated:
-        new_game = Game(dare=request.form["dare"], player1=current_user.id)
+        game = Game(dare=request.form["dare"], player1=current_user.id)
     else:
-        new_game = Game(dare=request.form["dare"])
-    session.add(new_game)
+        game = Game(dare=request.form["dare"])
+    session.add(game)
     session.commit()
     logout_user()
-    return redirect(url_for("player2_range_get", id=new_game.id))
+    flash(game.user1.username + ", your dare was saved.  Now the other player needs to login.  You can send them this URL, or pass your device to them.")
+    return redirect(url_for('login_get') + "?next=" + url_for("player2_range_get", id=game.id))
+    #return redirect(url_for("player2_range_get", id=game.id))
 
 @app.route("/game/<id>", methods=["GET"])
 @login_required
@@ -119,6 +121,7 @@ def player2_choice(id):
     game.move1=move1
     session.add(game)
     session.commit()
+    flash(game.user2.username + ", your odds and your choice are saved.  Now " + game.user1.username + " needs to pick a number.  You can send them this URL, or pass your device to them.")
     return redirect(url_for("player1_choice_get", id=id))
         
 @app.route("/game/<id>/player1choice", methods=["GET"])
