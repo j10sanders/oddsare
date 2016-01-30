@@ -12,7 +12,7 @@
 
 <h2>
     {% if result == 1 %}
-    Sucka!  Player 1, you gotta {{game.dare}}
+    Sucka!  {{game.user1.username | default("Player 1")}}, you gotta {{game.dare}}
     {% elif result == 0 %}
     Lame.  Nobody has to do anything.  Wanna play again?
     <p><br>

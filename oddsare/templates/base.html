@@ -30,11 +30,17 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="{{ url_for('player1_dare_get') }}">Odds Are...</a>
+                    <a class="navbar-brand" href="{{ url_for('login_get') }}">Odds Are...</a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="{{ url_for('login_get') }}">Login</a> <span class="sr-only">(current)</span></a></li>
+                        {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                        <li><a href="#">Logged in as {{current_user.username}}</a> <span class="sr-only">(current)</span></a></li> 
+                        {% else %}
+                        <li><a href="{{ url_for('login_get') }}">Login</a> <span class="sr-only">(current)</span></a></li> 
+                        <li><a href="{{ url_for('register_get') }}">Register</a> <span class="sr-only">(current)</span></a></li> 
+                        {% endif %}
                     </ul>
                 </div>
             </div>

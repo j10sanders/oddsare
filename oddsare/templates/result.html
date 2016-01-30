@@ -12,9 +12,9 @@
 
 <h2>
     {% if result == 1 %}
-    Sucka!  Player 2, you gotta {{game.dare}}
+    Sucka!  {{game.user2.username | default("Player 2")}}, you gotta {{game.dare}}
     {% elif result == 0 %}
-    Player 2, you did a nice job.  Wanna rebound??
+    {{game.user2.username | default("Player 2")}}, you did a nice job.  Wanna rebound??
     <p><br>
     <a href="{{ url_for('player1_rebound_get', id=id)}}">Yeah</a>
     </p>
