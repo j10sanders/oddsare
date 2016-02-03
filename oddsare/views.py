@@ -1,10 +1,13 @@
 from flask import Flask, flash, render_template, request, redirect, url_for, abort
-from oddsare import app, oddsare
+from oddsare import app, oddsare, validateuser
 from oddsare.oddsare import InvalidNumberException
+from oddsare.validateuser import IntegrityError
 from .database import Game, session, User
 import os
 from flask.ext.login import login_user , logout_user , current_user , login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy.exc import IntegrityError
+
 
 
 @app.route("/register", methods=["GET"])
@@ -13,11 +16,15 @@ def register_get():
 
 @app.route("/register", methods=["POST"])
 def register_post():
-    user = User(username=request.form['username'], password=generate_password_hash(request.form['password']), email=request.form['email'])
-    session.add(user)
-    session.commit()
-    flash('User successfully registered')
-    return redirect(url_for('login_get'))
+    try: 
+        user = User(username=request.form['username'], password=generate_password_hash(request.form['password']), email=request.form['email'])
+        session.add(user)
+        session.commit()
+        flash('User successfully registered')
+        return redirect(url_for('login_get'))
+    except IntegrityError:
+        flash("The username or email was already taken.  This app isn't sophisticated enough to let you reset a password, so just register a new user", "danger")
+        return redirect(url_for('register_get'))
     
 @app.route("/")
 @app.route("/login", methods=["GET"])
