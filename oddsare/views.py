@@ -24,7 +24,7 @@ def register_post():
         session.commit()
         flash("User successfully registered")
         login_user(user)
-        return redirect(request.args.get('next') or url_for("player1_dare_get"))
+        return redirect(request.args.get("next") or url_for("player1_dare_get"))
     except IntegrityError:
         flash("The username or email was already taken.  This app isn't sophisticated enough to let you reset a password, so just register a new user", "danger")
         return redirect(url_for("register_get"))
@@ -235,7 +235,8 @@ def stats_get():
     #dare = session.query(Game.dare).order_by(Game.dare).all()
     #print(dare)
     #game = session.query(Game.dare).order_by(Game.dare).all()
-    return render_template("stats.html", users=users)
+    games = session.query(Game).all()
+    return render_template("stats.html", users=users, games=games)
 
 
 @app.route("/userinfo")
@@ -244,7 +245,10 @@ def user_get():
     id = request.args.get("id")
     try:
         user = session.query(User).filter_by(id=id).one()
+        games = session.query(Game).all()
+        for game in user.games: 
+            print(game.dare)
     except NoResultFound:
         print("No result found for {0}".format(id))
         user = None
-    return render_template("userinfo.html", user=user)
+    return render_template("userinfo.html", user=user, games=games)

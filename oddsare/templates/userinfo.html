@@ -12,7 +12,10 @@
     </div>
     <div class="panel panel-primary">
       <div class="panel-heading">Games played</div>
-      <div class="panel-body">{{ user.games }}</div>
+      <div class="panel-body">
+        {% for game in user.games %}
+          {{ game.dare + "."}}
+          {% endfor %}</div>
     </div>
   {% else %}
     <div class="alert alert-warning" role="alert">

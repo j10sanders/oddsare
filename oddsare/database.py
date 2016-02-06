@@ -40,7 +40,7 @@ class User(Base, UserMixin):
     email = Column(String(128), unique=True)
     password = Column(String(128))
     registered_on = Column('registered_on', DateTime)
-    games = relationship('Game', viewonly=True, backref="user", primaryjoin='or_(User.id == Game.player1, User.id == Game.player2)')
+    games = relationship('Game', viewonly=True, backref="user", lazy="dynamic", primaryjoin='or_(User.id == Game.player1, User.id == Game.player2)')
 
 #Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
