@@ -7,6 +7,8 @@ import os
 from flask.ext.login import login_user , logout_user , current_user , login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import NoResultFound
+
 
 
 
@@ -228,10 +230,21 @@ def player2_choice2(id):
     
 @app.route("/stats", methods=["GET"])
 def stats_get():
-    username = session.query(User.username).order_by(User.username).all()
-    print(username)
-    dare = session.query(Game.dare).order_by(Game.dare).all()
-    print(dare)
-    #ref = db.session.query(reference).filter(reference.parent == 1).all())
+    users = session.query(User).all()
+    #print(username)
+    #dare = session.query(Game.dare).order_by(Game.dare).all()
+    #print(dare)
     #game = session.query(Game.dare).order_by(Game.dare).all()
-    return render_template("stats.html",  username=username, dare=dare)
+    return render_template("stats.html", users=users)
+
+
+@app.route("/userinfo")
+def user_get():  
+    """Gets specific info for a user based on their ID"""
+    id = request.args.get("id")
+    try:
+        user = session.query(User).filter_by(id=id).one()
+    except NoResultFound:
+        print("No result found for {0}".format(id))
+        user = None
+    return render_template("userinfo.html", user=user)
