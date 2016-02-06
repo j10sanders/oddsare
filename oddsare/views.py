@@ -17,14 +17,15 @@ def register_get():
 @app.route("/register", methods=["POST"])
 def register_post():
     try: 
-        user = User(username=request.form['username'], password=generate_password_hash(request.form['password']), email=request.form['email'])
+        user = User(username=request.form["username"], password=generate_password_hash(request.form["password"]), email=request.form["email"])
         session.add(user)
         session.commit()
-        flash('User successfully registered')
-        return redirect(url_for('login_get'))
+        flash("User successfully registered")
+        login_user(user)
+        return redirect(request.args.get('next') or url_for("player1_dare_get"))
     except IntegrityError:
         flash("The username or email was already taken.  This app isn't sophisticated enough to let you reset a password, so just register a new user", "danger")
-        return redirect(url_for('register_get'))
+        return redirect(url_for("register_get"))
     
 @app.route("/")
 @app.route("/login", methods=["GET"])
@@ -209,7 +210,7 @@ def player2_choice2_get(id):
     elif game.move4:
         return render_template("reboundresult.html", game=game, result=result, id=id)    
     else:
-        return render_template("player2choice2.html", game = game)
+        return render_template("player2choice2.html", game=game)
         
 @app.route("/game/<id>/player2choice2", methods=["POST"])
 def player2_choice2(id):
@@ -224,3 +225,13 @@ def player2_choice2(id):
     session.commit()
     result = oddsare.compare(game.move3, game.move4)
     return render_template("reboundresult.html", game=game, result=result, id=id)
+    
+@app.route("/stats", methods=["GET"])
+def stats_get():
+    username = session.query(User.username).order_by(User.username).all()
+    print(username)
+    dare = session.query(Game.dare).order_by(Game.dare).all()
+    print(dare)
+    #ref = db.session.query(reference).filter(reference.parent == 1).all())
+    #game = session.query(Game.dare).order_by(Game.dare).all()
+    return render_template("stats.html",  username=username, dare=dare)
