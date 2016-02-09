@@ -42,7 +42,7 @@ def login_post():
     if not user or not check_password_hash(user.password, password):
         flash("Incorrect username or password", "danger")
         return redirect(url_for("login_get"))
-    login_user(user)
+    login_user(user, remember=True, force=True)
     flash('Logged in successfully')
     return redirect(request.args.get('next') or url_for("player1_dare_get"))
     
