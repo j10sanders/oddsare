@@ -10,8 +10,6 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 
-
-
 @app.route("/register", methods=["GET"])
 def register_get():
     return render_template('register.html')
@@ -71,7 +69,7 @@ def player1_dare():
     session.add(game)
     session.commit()
     logout_user()
-    flash(game.user1.username + ", your dare was saved.  Now the other player needs to login.  You can send them this URL, or pass your device to them.")
+    flash(game.user1.username + ", your dare was saved.  Now the other player needs to login.  You can send them this URL, or pass your device to them.", "success")
     return redirect(url_for('login_get') + "?next=" + url_for("player2_range_get", id=game.id))
     #return redirect(url_for("player2_range_get", id=game.id))
 
