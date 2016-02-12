@@ -50,9 +50,14 @@ def logout():
     logout_user()
     return redirect(request.args.get('next') or url_for("login_get"))
     
+'''@app.route("/home", methods=["GET"])
+def homepage():
+    return render_template("game.html")
+    
+#@app.route("/home", methods=["POST"])'''
 
-@app.route("/game", methods=["GET"])
 @app.route("/new_game", methods=["GET"])
+@app.route("/game", methods=["GET"])
 @login_required
 def player1_dare_get():
     return render_template("player1dare.html")
@@ -70,8 +75,9 @@ def player1_dare():
     session.commit()
     logout_user()
     flash(game.user1.username + ", your dare was saved.  Now the other player needs to login.  You can send them this URL, or pass your device to them.", "success")
-    return redirect(url_for('login_get') + "?next=" + url_for("player2_range_get", id=game.id))
-    #return redirect(url_for("player2_range_get", id=game.id))
+    #return redirect(url_for('login_get') + "?next=" + url_for("player2_range_get", id=game.id))
+    return redirect(url_for("player2_range_get", id=game.id))
+    
 
 @app.route("/game/<id>", methods=["GET"])
 @login_required
@@ -82,7 +88,6 @@ def player2_range_get(id):
         abort(404)
     elif game.odds:
         return redirect(url_for("player1_dare_get", id=id))
-    game.player2 = current_user.id
     return render_template("player2setrange.html", game=game)
 
 @app.route("/game/<id>", methods=["POST"])
@@ -93,16 +98,11 @@ def player2_odds(id):
     except InvalidNumberException as e:
         flash(str(e), "danger")
         return redirect(url_for("player2_range_get", id=id))
-    #if current_user.is_authenticated and game.player1 != current_user.id:
-        #game.player2 = current_user.id
-    print(game.user1.username)
-    print(game.user2.username)
+    game.player2 = current_user.id
     logout_user()
     game.odds = odds
     session.add(game)
     session.commit()
-    #print(game.player1(users.id))
-    #print(game.player2.name)
     return redirect(url_for("player2_choice_get", id=id))
     
     
@@ -125,7 +125,6 @@ def player2_choice(id):
     except InvalidNumberException as e:
         flash(str(e), "danger")
         return redirect(url_for("player2_choice_get", id=id))
-    #print(game.player1.username)
     game.move1=move1
     session.add(game)
     session.commit()
@@ -229,24 +228,17 @@ def player2_choice2(id):
 @app.route("/stats", methods=["GET"])
 def stats_get():
     users = session.query(User).all()
-    #print(username)
-    #dare = session.query(Game.dare).order_by(Game.dare).all()
-    #print(dare)
-    #game = session.query(Game.dare).order_by(Game.dare).all()
     games = session.query(Game).all()
     return render_template("stats.html", users=users, games=games)
 
 
-@app.route("/userinfo")
-def user_get():  
+@app.route("/userinfo/<id>")
+def user_get(id):  
     """Gets specific info for a user based on their ID"""
-    id = request.args.get("id")
     try:
         user = session.query(User).filter_by(id=id).one()
         games = session.query(Game).all()
-        for game in user.games: 
-            print(game.dare)
     except NoResultFound:
-        print("No result found for {0}".format(id))
+        #print("No result found for {0}".format(id))
         user = None
     return render_template("userinfo.html", user=user, games=games)

@@ -7,7 +7,7 @@
   {% for user in users %}
     <li class="list-group-item">
       <h2>
-        <a href="{{ url_for('user_get') }}?id={{ user.id }}">{{ user.username }}</a>
+        <a href="{{ url_for('user_get', id=user.id) }}">{{ user.username }}</a>
         <span class="badge">
           {% for game in user.games %}
           {{ game.dare + "."}}
