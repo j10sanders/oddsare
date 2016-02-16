@@ -12,6 +12,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 @app.route("/register", methods=["GET"])
 def register_get():
+    print(request.query_string[11:])
     return render_template('register.html')
 
 @app.route("/register", methods=["POST"])
