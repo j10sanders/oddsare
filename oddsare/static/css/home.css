@@ -38,14 +38,9 @@ text-align: center;
 
 a:hover {
 	/* Tyopography Declarations */
-	color: #FFE799;
-}
-
-
-a:visited {
-	/* Typography Declarations */
 	color: #D1A000;
 }
+
 
 
 section > h1 {
