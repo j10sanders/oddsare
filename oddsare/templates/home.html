@@ -1,0 +1,27 @@
+{% extends "homebase.html" %}
+
+{% block content %}
+<body>
+    
+  <header class="masthead">  
+  <br>
+    <h1 class="masthead-heading">Welcome to Odds Are</h1> 
+  </header>
+  
+<section class="introduction-section">
+    <h1><a href="{{ url_for('register_get') }}">Register</a> <span class="sr-only">(current)</span></a> or <a href="{{ url_for('login_get') }}">Login</a> <span class="sr-only">(current)</span></a></h1>
+  <p><br>...The app developer assumes no responsibility for the results of the game</p>
+  </section>
+  
+
+
+    
+  <footer class="content-footer">
+    <p>Check out this project on
+  <a href="https://github.com/j10sanders/oddsare">Github</a></p>
+
+  </footer>
+
+</body>
+</html>
+{% endblock %}

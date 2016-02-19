@@ -9,7 +9,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
-
+@app.route("/home", methods=["GET"])
+def home_get():
+    return render_template('home.html')
+    
 @app.route("/register", methods=["GET"])
 def register_get():
     print(request.query_string[11:])
