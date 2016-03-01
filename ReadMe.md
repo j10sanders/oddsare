@@ -7,4 +7,4 @@ I've made a web app version that has two main benefits:
  2. You can send dares to friends without needing to be in their immediate vicinity, or without saying your odds out loud in a public space.
  
 ## Play it!
-You can find the heroku-deployed version here: http://ancient-basin-3945.herokuapp.com/
+You can find the heroku-deployed version here: http://ancient-basin-3945.herokuapp.com/home
